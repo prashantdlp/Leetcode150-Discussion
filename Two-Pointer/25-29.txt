@@ -1,0 +1,155 @@
+Note: [Only solutions with "Two Pointer" Technique are listed here]
+
+25.Valid Palindrome :
+
+	Code [C++]:
+
+		int i = 0; 		// traverses from left
+        	int j = s.length() - 1; // traverses from right
+        	while (i < j) {
+
+    			// Move i to the next alphanumeric character or beyond the end of the string
+    			while (i < j && !isalnum(s[i])) i++;
+
+    			// Move j to the previous alphanumeric character or before the start of the string
+    			while (i < j && !isalnum(s[j])) j--;
+    
+    			// Compare lowercase versions of the characters
+    			if (tolower(s[i]) != tolower(s[j])) return false;
+    			
+    			i++;
+    			j--;
+		}
+		return true;
+
+26.Is Subsequence:
+
+ 	Code [C++]:
+
+		int si=0; // traverses in s 
+       		int ti=0; // traverses in t
+        	while(si<s.size() && ti<t.size()){
+            		if(t[ti]==s[si]){
+                		ti++;
+				si++;
+            		}
+			else ti++;
+        	}   
+        	return si==s.size() ? true : false;
+
+27.Two Sum II - Input Array Is Sorted :
+	
+	Code[C++]:
+
+		int left=0;
+		int right=numbers.size()-1;
+        	vector<int>p;
+        	while(left<right){
+            		if(numbers[left]+numbers[right] == target){
+                		p.push_back(left+1);  //1-indexed arrays
+                		p.push_back(right+1); //1-indexed arrays
+                		break;
+            		}else if (numbers[left]+numbers[right] < target){
+                		left++;
+            		}else right--;
+        	}
+        	return p;
+
+28.Container With Most Water :
+
+	Code[C++]:
+		
+		int left=0;
+		int right=height.size()-1;
+        	int maxi=0;
+        	while(left<right){
+            		maxi=max(maxi,(right-left)*min(height[left],height[right])); // calculation of water (basically a rectangle)
+            		height[left]>height[right] ? right-- : left++ ; // move those lines which have less height. Why?
+        	}
+        	return maxi;
+
+	Why?{
+		This is a formal proof of the O(n) algorithm mentioned above.
+
+		Problem Description:
+
+		Condition: We have two pointers at left & right, suppose h[left] <= h[right].
+
+		Goal to Prove: If there is a better answer within the sub-range of [left, right], 
+		then the range [left + 1, right] must contain that optimal sub-range. 
+		(This doesn't mean range [left, right - 1] can't contain it, we just want to prove range [left + 1, right] will contain it).
+
+		Proof: Since we assume there is a better answer in the sub-range of [left, right], 
+		then this optimal range must be contained by either [left + 1, right] or [left, right - 1], or both.
+
+		Let's assume [left + 1, right] doesn't contain the optimal range, but [left, right - 1] contains it. Then this means two things:
+
+		The optimal range is not in [left + 1, right - 1], otherwise, [left + 1, right] will contain it.
+
+		The optimal range contains the block [left, left + 1] (since this is the part which exists in [left, right - 1] but not in [left+1, right]).
+		However, notice that, len(left, right - 1) < len(left, right), and in the range [left, right], the area is constrained by the height of 		h[left] (even in the case h[left] == h[right]). 
+
+		Thus, in the range [left, right - 1], even all pillar are no shorter than h[right], 
+		the maximum area is smaller than the area formed by left & right, 
+		which contradicts our assumption there is a better answer in the sub-range of [left, right]. 
+
+		This contradiction suggests [left + 1, right] contains the optimal sub-range, if such sub-range exists.
+
+		According to above theorem, we can design the algorithm, whenever h[left] < h[right], we advance the pointer left.
+	}
+
+	In Simple Language:
+		
+		Move the shorter line’s pointer. Suppose height[left] <= height[right], so the left line is shorter (or equal). 
+		Then the container’s height is height[left]. If we kept the left line and instead moved the right pointer one step closer, 
+		the width would shrink by 1 but the height would stay at most height[left] (since left is still the shorter). 
+		So the area (new_width * height[left]) would be strictly smaller. In other words, 
+		any container using this same left line with a closer right line can only hold less water. 
+		Therefore there’s no point in keeping the old left line – it can’t give a better answer than we already have. 
+		We then move left one step to try a potentially taller line. 
+
+		GeeksforGeeks summarizes this: “moving the [taller] line would only reduce the width, 
+		and the height cannot increase because of the shorter line, thus decreasing the amount of water”
+
+
+		Why it finds the maximum. By always moving the shorter line’s pointer, we never miss a better container. 
+		We only discard cases that are guaranteed to be worse than an area we’ve already computed. 
+		In fact, the formal proof shows that whenever height[left] <= height[right], 
+		any container using the left line with a closer right line can’t beat the current one.
+ 		This means we only skip configurations that cannot possibly be optimal. 
+		As a result, the algorithm eventually examines the optimal pair of lines (and no costly comparisons are wasted), 
+		ensuring correctness and an overall linear runtime.
+
+29.Three Sum :
+
+	Code[C++]:
+		
+		vector<vector<int>> ans;
+        	sort(nums.begin(), nums.end());
+        	for (int i = 0; i < nums.size(); i++) {
+        		//remove duplicates:
+        		if (i != 0 && nums[i] == nums[i - 1]) continue;
+
+        		//moving 2 pointers:
+        		int j = i + 1;
+        		int k = nums.size() - 1;
+        		while (j < k) {
+            			int sum = nums[i] + nums[j] + nums[k];
+            			if (sum < 0) {
+                			j++;
+            			}
+            			else if (sum > 0) {
+                			k--;
+            			}
+            			else {
+                			ans.push_back({nums[i], nums[j], nums[k]});
+                			j++;
+                			k--;
+                			//skip the duplicates:
+                			while (j < k && nums[j] == nums[j - 1]) j++;
+                			while (j < k && nums[k] == nums[k + 1]) k--;
+           	 		}
+        		}
+    		}
+    		return ans;
+			
