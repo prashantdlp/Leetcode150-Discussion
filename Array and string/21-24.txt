@@ -1,0 +1,132 @@
+21.Reverse Words in a String :
+	
+	code [Python] :
+		words=s.strip().split()
+        	words.reverse()
+        	str=" ".join(words)
+        	return str
+
+	code [C++] :
+
+		reverse(s.begin(), s.end()); 	//This reverses the entire string character-wise
+        	int n = s.size();
+        	int left = 0;int right = 0; 	//pointers to keep track of where to copy and reverse words in place
+        	int i = 0; //index for iterating through the string
+        	while (i < n) {
+            		while (i < n && s[i] == ' ')
+                		i++; 		//Skips all spaces to reach the start of a word.
+            		if (i == n)
+               			break; 		//If end of string is reached after skipping spaces:
+            		while (i < n && s[i] != ' ') {
+                		s[right++] = s[i++];
+            		}
+           		reverse(s.begin() + left, s.begin() + right); //This step re-reverses each word to fix it.
+			//Since we initially reversed the full string, each word is currently reversed character-wise. 
+            		s[right++] = ' '; 	//Add a single space after the word
+            		left = right;		//Update left to the new right to mark the beginning of the next word
+            		i++;
+        	}
+        	s.resize(right - 1); //The last word has an extra space after it (added in the loop), so we shrink the string by 1 to remove it
+        	return s;		
+
+22.ZigZag Conversion :
+	
+	Approach: Row-by-Row Simulation with Custom Jump Logic
+	Time Complexity: O(n)
+	Space Complexity: O(n) for result string
+
+	Intuituion :
+		Zigzag writing creates a repeating pattern where characters are vertically down, then diagonally up, like this for numRows = 4:
+		The challenge is to collect characters row by row, without actually creating a 2D matrix.
+
+	Key Idea in This Code :
+		The pattern follows a cycle: downward jump then upward jump.
+		For each row i, you calculate:
+
+		additive = 2 * (numRows - i - 1) → downward jump
+		_additive = 2 * i → upward jump
+	
+		You move along the string with j, starting from j = 0, and add characters from positions like i + j, i + j + additive, etc.
+		The pattern alternates: First uses additive, Then _additive, Repeats until the string ends.
+		For first and last row, one of these values becomes zero — in that case, jump is constant.
+	
+	Code Flow Summary :
+
+		Edge Case: If numRows == 1, return string as is.
+
+		For each row (i):
+			1. Initialize additive and _additive based on row index.
+			2. Start from index i, move forward using jumps alternately.
+			3. Append each valid character (s[i + j]) to result string
+
+ 		Return final constructed string.
+
+	Code [C++] :
+
+		string convert(string s, int numRows) {
+    			if (numRows == 1) return s; // Handled Edge Case
+			int n = s.size();
+    			std::string str = ""; // Empty String , I first used string str=s but in that overwriting problems were possible .
+    			
+    			int additive = 2 * numRows;
+    			int _additive = -2;
+
+    			int i = 0; // shows index of row
+    			int cnt = 0; // cnt is a measure of how many element has been added 
+    			int j; // additives are added in j which is added in i later 
+    			int iteration_count; // helpful to manage alternative addition
+
+    			while (i < numRows) {
+        			additive -= 2;
+        			_additive += 2;
+
+        			j = 0;
+        			iteration_count = 0;
+
+        			while ((i + j) < n && cnt < n) { 
+            				str += s[i + j];
+            				cnt++;
+
+            				if (additive == 0) j += _additive; // constant addition in complete row
+            				else if (_additive == 0) j += additive; // constant addition in complete row
+            				else j += (iteration_count % 2 == 0 ? additive : _additive); // alternate addition 
+
+            				iteration_count++;
+        			}
+
+        			i++;
+    			}
+    			return str;
+		}
+
+  
+	Note:[I forgot to make jump constant for last rows so cried during debugging. The edge case made me crash out in the end.]
+	
+23.Find the Index of the First Occurrence in a String :
+
+	code [Python] :
+		return haystack.find(needle)
+
+	code [C++] :
+
+    	(1)	int n = haystack.size(), m = needle.size();
+    		if (m == 0) return 0;
+    		for (int i = 0; i <= n - m; i++) {
+        		int j = 0;
+        		while (j < m && haystack[i + j] == needle[j]) {
+            		j++;
+        		}
+        		if (j == m) return i; // match found
+    		}
+    		return -1; // not found
+
+	(2)	size_t pos = haystack.find(needle);    // searches for the first occurrence of needle in haystack.
+		return pos != string::npos ? pos : -1; // string::npos {A constant that means "not found"}
+
+24.Text Justification:- [Hard]
+
+	Will be added soon...
+
+
+
+
