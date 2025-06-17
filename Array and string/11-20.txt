@@ -1,0 +1,230 @@
+11.H-Index :
+	
+	We will sort the Citations array in decreasing order and then iterate from front till if(citations[i]<=i)return i; Why?
+	Due to edge cases {when array initially was sorted in increasing order} we will return citations.size() as default value.  
+
+	Why?{Because [i] number of papers have more citations than i but [i+1]th paper has less than i citations so violates definition.}
+
+12.Insert Delete GetRandom O(1) :
+	
+	A great video solution of this problem is on NeetCode YouTube Channel.
+	Here is the link (copy it from here and paste it in your browser)
+	https://www.youtube.com/watch?v=j4KwhBziOpg
+
+	Code [C++] :
+		class RandomizedSet {
+		private:
+   			std::unordered_map<int, int> valToIndex;
+    			std::vector<int> vals;
+		public:
+    			RandomizedSet() {
+        
+    			}
+    
+    			bool insert(int val) {
+       				if (valToIndex.find(val) != valToIndex.end()) return false;
+        			valToIndex[val] = vals.size();
+        			vals.push_back(val);
+        			return true;
+    			}
+    
+    			bool remove(int val) {
+        			if (valToIndex.find(val) == valToIndex.end()) return false;
+        			int index = valToIndex[val];
+        			valToIndex[vals.back()] = index;
+       				valToIndex.erase(val);
+        			vals[index] = vals.back();
+        			vals.pop_back();
+        			return true;
+    			}
+    
+   			int getRandom() {
+        			return vals[rand() % vals.size()];
+    			}
+		};
+	
+
+13.Product of Array Except Self :
+	
+	Make three vectors front ,back and ans of size n. Define left=1;right=1;
+	for(int i=0;i<n;i++)l=l*nums[i];front[i]=l;
+        for(int j=n-1;j>0;j--)r=r*nums[j];back[j]=r;
+        ans[0]=back[1];ans[n-1]=front[n-2];
+	for(int i=1;i<n-1;i++)ans[i]=front[i-1]*back[i+1];
+        
+
+14.Gas Station :
+ 	
+	Brute Force Greedy Solution: 
+
+		Make an vector diff[i]=(gas[i]-cost[i]) and use accumulate STL to find sum of all elements of diff.
+		int sum = accumulate(diff.begin(), diff.end(), 0); // Here 0 is the initial value of the sum variable
+		if sum<0 return -1 else solution exist and that too unique (given in problem statement)
+		
+		So now we will find first such element from where sum of all right elements remains positive 
+		as only one solution exist so this is gonna be our solution.
+
+		Define int ans=0; // Stores our possible answers which we gonna check and update throughout the loop
+		now run a loop over diff and calculate temp_sum+=diff[i] and wherever it becomes negative reset it to zero and ans=(i+1) ; 
+		return ans;
+
+	Same Greedy Solution Optimised :
+
+		int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+    			int sum = 0, temp_sum = 0, ans = 0;
+    			for (int i = 0; i < gas.size(); i++) {
+        			int diff = gas[i] - cost[i];
+        			sum += diff;
+        			temp_sum += diff;
+        			if (temp_sum < 0) {
+            				ans = i + 1;
+            				temp_sum = 0;
+        			}
+    			}
+    			return sum < 0 ? -1 : ans;
+		}
+
+15.Candy :
+	
+	Brute Force [C++]:
+
+		int N = ratings.size();
+    		vector<int> left(N, 1);  // Rewards from the left direction, initialized to 1
+    		vector<int> right(N, 1); // Rewards from the right direction, initialized to 1
+    		
+    		for (int i = 1; i < N; ++i) {// Traverse from left to right
+        		if (ratings[i] > ratings[i - 1]) {
+            		// If current rating is greater than previous, increase reward
+            		left[i] = left[i - 1] + 1;
+       			}
+    		}
+    		
+    		for (int j = N - 2; j >= 0; --j) {// Traverse from right to left
+        		if (ratings[j] > ratings[j + 1]) {
+            		// If current rating is greater than next, increase reward
+            		right[j] = right[j + 1] + 1;
+        		}
+    		}
+    		int sum = 0;
+    		
+    		for (int k = 0; k < N; ++k) {// Calculate total rewards by taking the max of both directions
+        		sum += max(left[k], right[k]);
+    		}
+    		return sum;
+	
+	Better Solution [C++]:
+		
+		int n = ratings.size();
+    		if (n == 0) return 0;
+
+    		vector<int> left(n, 1); // Store rewards from left to right
+
+    		// First pass: left to right
+    		for (int i = 1; i < n; ++i) {
+        		if (ratings[i] > ratings[i - 1]) {
+            		left[i] = left[i - 1] + 1;
+        		}
+    		}	
+
+    		// Second pass: right to left using a single variable
+
+    		int curr = 1; // current right-side reward
+    		int right = 1; // previous right-side reward
+    		int sum = max(left[n - 1], 1); // Initialize sum with last element's reward
+
+    		for (int i = n - 2; i >= 0; --i) {
+        		if (ratings[i] > ratings[i + 1]) {
+            			curr = right + 1;
+        		} else {
+            			curr = 1;
+        		}
+        		right = curr;
+        		sum += max(left[i], curr); // Take max reward from both directions
+    		}
+
+    		return sum;
+
+	Optimal Solution [C++]:
+
+		int n = ratings.size();
+    		if (n == 0) return 0;
+
+    		int i = 1;
+    		int sum = 1; // Start with 1 candy/reward for the first child
+
+    		while (i < n) {
+        		if (ratings[i] == ratings[i - 1]) {
+            		// Flat slope: give 1 reward
+            		sum += 1;
+            		i++;
+            		continue;
+        		}
+
+        		// Handle increasing slope (upslope)
+        		int peak = 1;
+        		while (i < n && ratings[i] > ratings[i - 1]) {
+            			peak += 1;
+            			sum += peak;
+            			i++;
+        		}
+
+        		// Handle decreasing slope (downslope)
+        		int down = 0;
+        		while (i < n && ratings[i] < ratings[i - 1]) {
+            			down += 1;
+            			sum += down;
+            			i++;
+        		}
+
+        		// We gave `peak` candies during the upslope.
+        		// But during downslope, the peak point is double-counted — once in upslope, once in down.
+        		// So if downslope length is greater than or equal to peak, we need to compensate.
+
+        		down++; // Include the peak in down count
+
+        		if (down > peak) {
+            			sum += down - peak;
+        		}
+    		}
+
+    		return sum;
+
+16.Trapping Rain Water:- [Hard]
+
+	Will be added soon...
+		
+17.Roman to Integer :
+	
+	First store all those <character,value> pair in an unordered_map and then define a total=0 ; 
+	Now iterate over the string, if map[s[i]]<map[s[i+1]] then total-=map[s[i]] else total+=map[s[i]]. Why? 
+	In the end return total. 
+	
+	Why?{In Roman numbers if 'I' comes before 'V' i.e. "IV" then value of string becomes '5'-'1'='4'. 
+	     This same logic is implemented in the code}
+
+18.Integer to Roman :
+	
+	Make a empty string s =""; and run a while loop till num>0 .
+	If num>=1000 then num-=1000 and s+="M";
+	Similarly add string for if-else conditions num>=900,num>=500,num>=400,num>=100 ;
+	num>=90,num>=50,num>=40,num>=10,num==9 (yes use ==),num>=5,num==4(yes use ==),else s+="I" .
+        
+	Note:[This solution is Hard Coded but most efficient solution]          		
+		
+19.Length of Last Word :
+
+	Iterate from back & use Boolean flag variable to determine first (might not exist) and second consecutive whitespace sequence from left. 
+	Our last word will be between these whitespaces. 
+
+	code [Python] :
+		words=s.strip().split()
+		return len(words[-1]) 
+		
+20.Longest Common Prefix :
+
+	If strs is empty then return "".
+	Else take strs[0] as base and do iteration in it character by character and for each of its substring
+	compare these with all elements of strs via for-loop/while-loop.
+	If at any point strs[j] is completely traversed i.e. i == strs[j].length() or strs[j][i]!=strs[0][i] then 
+	use STL substr and return strs[0].substr(0,i); // Here [i]th is not included i.e. [0,i)     
+
