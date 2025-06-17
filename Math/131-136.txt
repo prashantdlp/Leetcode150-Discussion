@@ -1,0 +1,246 @@
+131.Palindrome Number :-
+
+	Code[C++]:- { Here x is input, z is reversing the input and y is copy of x to check equality of reverse number with original number }
+	
+		bool isPalindrome(int x) {
+        		if(x<0)return false;
+        		long y=x;
+        		long z=0;
+        		while(x>0){
+            			z=(10*z+(x%10));
+            			x/=10;
+        		}
+        		if(y==z)return true;
+        		else return false;
+    		}
+
+	Code[C++]:- { Alternative method is to convert integer into string and check using two pointers whether string is palindrome or not } 
+
+		bool isPalindrome(int x) {
+    			if (x < 0) return false;
+
+    			string s = to_string(x);
+    			int left = 0, right = s.size() - 1;
+
+    			while (left < right) {
+        			if (s[left] != s[right]) return false;
+        			left++;
+        			right--;
+    			}
+
+    			return true;
+		}
+		
+132.Plus One :-
+	
+	Code[C++]:{ We are basically doing addition and carry says whether add one or not and in the end if carry==true then it adds 1 at front.}
+
+		int n = digits.size();
+        	vector<int> output(n);
+        	bool carry = true; // Start with carry being true as we need to add one
+
+        	for(int i = n - 1; i >= 0; i--) {
+            		if(carry) {
+                		output[i] = (digits[i] + 1) % 10;
+                		carry = (digits[i] + 1) / 10 == 1;
+            		} else {
+                		output[i] = digits[i];
+            		}
+        	}
+
+        	if(carry) {
+            		output.insert(output.begin(), 1);
+        	}
+
+        	return output; 
+
+133.Factorial Trailing Zeroes :-
+
+	Intuition:- Trailing zeroes in n! come from factors of 10.
+		    But 10 = 2 × 5, and since even numbers (2s) are more common than 5s in factorials, 
+		    the number of 5s determines the count of trailing zeroes.
+
+                    So the goal becomes:
+		    Count how many times 5 appears as a factor in the numbers from 1 to n.
+
+                    But it’s not just n / 5.
+                    Some numbers (like 25, 125, 625...) contribute more than one 5 to the product.
+		    So we add
+			floor(n/5)+floor(n/25)+floor(n/125)+floor(n/625) .... 
+
+		    This continues until pow(5,k)>n. 		
+
+	Note:-[This is a Mathematical formula to find exact power of primes in factorial of numbers. ]
+			
+	Code[C++]:- 
+		
+		int cnt=0;double pow=5;
+       		while(pow<=n){
+            		cnt+=floor(n/pow);
+            		pow*=5;
+       		} 
+       		return cnt ;
+
+134.Sqrt(x) :-
+	
+	Code[C++]:- {using binary search}
+		
+		int l=1 ; int r = x;
+        	while(l<=r){
+            		long long m = l + (r-l)/2 ;
+            		if( m*m > x )r=m-1;
+            		else if ( m*m ==x )return m;
+            		else l = m+1 ; 
+        	}
+        	return r; 
+
+
+	Code[C++]:- {using standard template library of C++}
+		
+		return floor(sqrt(x)) ;
+
+135.Pow(x,n) :-
+
+	Code[C++]:- {using standard template library of C++}
+		return pow(x,n);
+
+	Code[C++]:- {Recursive Solution}
+
+		double power(double x,long long n){
+        		if (n == 0) return 1.0;
+
+    			double half = power(x, n / 2);
+
+    			if (n % 2 == 0) return half * half;
+    			else return half * half * x;
+    		}
+
+    		double myPow(double x, int n) {
+        		if (n == 0) return 1.0;
+
+    			long long N = n; // use long long to safely handle INT_MIN
+    			if (N < 0) {
+        			x = 1 / x;
+        			N = -N;
+    			}
+
+    			return power(x, N);
+    		}
+
+
+	Code[C++]:- {Iterative Solution}
+
+		double myPow(double x, int n) {
+   			long long N = n;  // use long long to avoid overflow for INT_MIN
+    			if (N < 0) {
+        			x = 1 / x;
+        			N = -N;
+    			}
+
+    			double result = 1.0;
+    			while (N > 0) {
+        			if (N % 2 == 1)
+            			result *= x;
+        			x *= x;
+        			N /= 2;
+    			}
+    			return result;
+		}
+
+136.Max Points on a Line :- [Hard]
+
+	Core Concepts Used:
+	
+		C++ STL doesn’t support hashing of 2D vectors by default.
+		So a custom hasher VectorHash is defined:
+		This function uniquely hashes any vector<vector<int>> by combining the hashes of each coordinate.
+
+		Uses the slope equality method to check if point lies on the line formed by two points.
+		This avoids floating-point errors and divisions.
+
+		Basically a line can be defined by two points so here each line is defined using first two points which are on that line.
+		Our hashmap stores line (it's first two points (first means the those who are at mathematically lower index in points)),
+		and number of points on that line.   
+
+	Code[C++]:- { Brute Force }
+
+	struct VectorHash {
+    		size_t operator()(const vector<vector<int>>& v) const {
+        		size_t result = 0;  // <-- renamed from 'hash' to avoid name clash
+        		for (const auto& inner : v) {
+            			for (int num : inner) {
+                			result ^= result * 31 + std::hash<int>()(num);  // use std::hash explicitly
+           		 	}
+        		}
+        		return result;
+    		}
+	};
+
+
+	bool onLine(const vector<int>& point, const vector<vector<int>>& line) {
+    		long long dx1 = line[1][0] - line[0][0];
+    		long long dy1 = line[1][1] - line[0][1];
+    		long long dx2 = point[0] - line[0][0];
+    		long long dy2 = point[1] - line[0][1];
+    		return dx1 * dy2 == dy1 * dx2;
+	}
+	
+	int maxPoints(vector<vector<int>>& points) {
+    		if (points.size() <= 2) return points.size();
+
+    		unordered_map<vector<vector<int>>, int, VectorHash> lineCounts;
+
+    		for (int i = 0; i < points.size(); ++i) {
+        		for (int j = i + 1; j < points.size(); ++j) {
+            			vector<vector<int>> line = {points[i], points[j]};
+            
+            			int count = 0;
+            			for (int k = 0; k < points.size(); ++k) {
+                			if (onLine(points[k], line)) {
+                    			count++; // count how many lie on this line
+                			}
+            			}
+            			lineCounts[line] = count;
+        		}
+    		}
+
+    		int maxPointsOnLine = 2;
+    		for (const auto& entry : lineCounts) {
+        		maxPointsOnLine = max(maxPointsOnLine, entry.second);
+    		}
+
+    		return maxPointsOnLine;
+	}
+	
+	Code[C++]:- { Better Solution }
+	
+	Explanation :-  To check if three points A, B, and C lie on the same line, the most efficient method is to use the slope condition:
+		        Points A, B, and C are collinear if the slope of AB = slope of BC.
+		        To avoid division and floating-point errors, use cross multiplication.
+		        Collinearity condition using slopes:
+			
+			Given:
+				Point A: p[i]
+				Point B: p[j]
+				Point C: p[k]
+			
+			It runs faster because it doesn't use any data structure and just uses simple arithmetic operations.	
+	
+	for(int i = 0; i<n; i++) {
+    		for(int j = i+1; j<n; j++) {
+        		int cnt = 0;
+        		for(int k = j+1; k<n; k++) {
+            			long long x = (p[j][1] - p[i][1]) * (p[k][0] - p[j][0]);
+            			long long y = (p[j][0] - p[i][0]) * (p[k][1] - p[j][1]);
+            			if(x == y) cnt++;
+        		}
+        		mx = max(2 + cnt, mx);
+    		}
+	}
+	
+	Note:-[But not scalable even for n bigger than 500-700]
+	
+	Code[C++]:- {Optimal}
+
+		Will be added soon...
+	
