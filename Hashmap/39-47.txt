@@ -1,0 +1,242 @@
+39.Ransom Note:- {Instead of using maps we are using arrays, as lowercase letters are only 26}
+		
+	bool canConstruct(string s, string t) {
+        	int s_char[26]={0};
+        	int t_char[26]={0};
+        	for(auto a:s)s_char[a-'a']++;
+        	for(auto b:t)t_char[b-'a']++;
+        	for(int i=0;i<26;++i)if(s_char[i]>t_char[i])return false;
+        	return true;
+    	}
+
+40.Isomorphic Strings:- 
+
+	//This approach is based on the fact that I have mapped characters to their last occurring index before it.
+	//It works even if I just have to check for their last index because earlier when we were on that last index,
+	//we already checked consistency of last occurrence before this last index.  
+
+	bool isIsomorphic(string s, string t) {
+        	if(s.size()!=t.size())return false;
+        	unordered_map<char,int>ms;
+        	unordered_map<char,int>mt;
+        	for(int i=0;i<s.size();++i){
+            		if(ms.find(s[i])==ms.end() && mt.find(t[i])!=mt.end())
+                		return false;
+            		if(ms.find(s[i])!=ms.end() && mt.find(t[i])==mt.end())
+                		return false;
+            		if((ms.find(s[i])!=ms.end() && mt.find(t[i])!=mt.end() ) && (ms[s[i]]!=mt[t[i]]))
+                		return false;
+            	ms[s[i]]=i;
+            	mt[t[i]]=i;
+        	}
+        	return true;
+    	}
+
+	//Another method is to map characters of both strings to each other.
+	//We will use two way mapping (not just one way??Why)
+
+	bool isIsomorphic(string s, string t) {
+
+		if(s.size()!=t.size())return false;
+		// First map: s[i] → t[i] mapping
+        	unordered_map<char, char> m1;
+
+        	for(int i = 0; i < s.length(); i++) {
+			// Check if s[i] was already mapped to some character in t
+            		if(m1.count(s[i])){
+				// If the previously mapped character is not t[i], it's inconsistent → not isomorphic
+                		if(m1[s[i]] != t[i])
+                    			return false;
+            		}
+			// Create or update the mapping from s[i] to t[i]
+            		m1[s[i]] = t[i];
+        	}
+
+		// Second map: t[i] → s[i] mapping (to ensure 1-to-1 reverse mapping)
+        	unordered_map<char, char> m2;
+
+        	for(int i = 0; i < t.length(); i++) {
+			// Check if t[i] was already mapped to some character in s
+            		if(m2.count(t[i])){
+				// If the previously mapped character is not s[i], it's inconsistent → not isomorphic
+                		if(m2[t[i]] != s[i])
+                    			return false;
+            		}
+			// Create or update the mapping from t[i] to s[i]
+            		m2[t[i]] = s[i];
+        	}
+
+		// If both mappings are consistent and bijective, strings are isomorphic
+       		return true;
+    	}        
+
+	Why?{	Let's take an example:
+		s = "ab"
+		t = "aa"
+
+		If you only check mapping from s[i] → t[i], you'll build:
+
+		m1 = {
+    			'a' → 'a',
+    			'b' → 'a'   // this will be added and not caught as wrong
+		}
+
+		The map allows 'a' and 'b' both to map to 'a'.
+		But this is not allowed in isomorphic strings, because:
+		Two different characters from s cannot map to the same character in t
+		So s = "ab", t = "aa" should return false — but one-way mapping won't catch this.
+	}
+
+41.Word Pattern:-
+
+	Code[Python3]:-{Same double mapping as previous question}
+		
+		chars = list(pattern)
+        	words = s.strip().split(" ")
+
+        	if len(chars) != len(words): 
+            		return False
+
+        	c_w={} #chars to words mapping
+
+        	for i in range(len(chars)) :
+            		value = c_w.get(chars[i])
+            		if value is not None:
+                		if c_w[chars[i]]!=words[i] :
+                    			return False
+            		c_w[chars[i]]=words[i]
+
+        	w_c={} #words to chars mapping
+
+        	for i in range(len(words)) :
+            		value = w_c.get(words[i])
+            		if value is not None:
+                		if w_c[words[i]]!=chars[i] :
+                    			return False
+            		w_c[words[i]]=chars[i]
+
+        	return True
+
+	Code[C++]:-
+
+		bool wordPattern(string pattern, string s) {
+        		vector<string> words;
+        		istringstream iss(s);// Create a stream from the string `s`
+        		string word;
+
+        		while (iss >> word)words.push_back(word);// Read space-separated words one by one
+    
+        		if (pattern.length() != words.size())return false;
+
+        		unordered_map<char, string> c_w;
+        		unordered_map<string, char> w_c;
+
+        		for (int i = 0; i < pattern.length(); ++i) {
+            			char c = pattern[i];
+            			string w = words[i];
+
+            			// Check c → w mapping
+            			if (c_w.count(c))if (c_w[c] != w)return false	
+            			else c_w[c] = w;
+
+            			// Check w → c mapping
+            			if (w_c.count(w))if (w_c[w] != c)return false;
+				else w_c[w] = c;
+        		}
+        		return true;  
+    		}
+
+	Note:-[if (c_w.count(c)){//code here} is equivalent of if (c_w.find(c) != c_w.end()){//code here}]
+42.Valid Anagram :-
+
+	Code[C++]:-
+	
+		bool isAnagram(string s, string t) {
+        		if(s.size()!=t.size())return false;
+        		int s_char[26]={0};
+        		int t_char[26]={0};
+        		for(auto a:s)s_char[a-'a']++;
+        		for(auto b:t)t_char[b-'a']++;
+        		for(int i=0;i<26;++i)if(s_char[i]!=t_char[i])return false;
+        		return true;
+    		}
+
+43.Group Anagrams:-
+
+	Code[C++]:-
+
+		vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        		unordered_map<string, vector<string>> mpp;//stores string and its group of anagrams
+        		vector<vector<string>>ans;
+        		for (auto word : strs) {
+            			string temp = word;		
+            			sort(temp.begin(), temp.end()); // "ate" -> "aet"
+				//after sorting temp of ate and eat is same and we use mpp[temp]
+            			mpp[temp].push_back(word);      // group anagrams
+        		}
+        		for (auto mu : mpp) {
+            			ans.emplace_back(mu.second);  // push each group of anagrams
+        		}
+        		return ans ;
+    		}
+
+44.Two Sum :- Two sum is a famous problem often solved using Two Pointers when array is sorted.
+	      Here we have solved using hashmap.
+	
+	Code[C++]:-
+
+		vector<int> twoSum(vector<int>& nums, int target) {
+        		map<int,int>mpp;
+        		int n=nums.size();
+        		for(int i=0;i<n;i++){
+            			int num=nums[i];
+            			int moreNeeded=target-num;
+            			if(mpp.find(moreNeeded) != mpp.end()){
+                			return {mpp[moreNeeded],i};
+            			}
+            			mpp[num]=i;
+        		}
+        		return{-1,-1};
+    		}
+			
+45.Happy Numbers:-
+
+	Code[C++]:- Basically for all numbers whose output should be false they end up go in loop with pre computed values we already stored.
+		    So we exit our while loop whenever st.find(n)!=st.end(). 	
+		
+		bool isHappy(int n) {
+    			unordered_set<int>st;
+    			int sum = 0;
+    			int digit = 0;
+    			while(n!=1 && st.find(n)==st.end()){
+        			st.insert(n);
+        			sum = 0;
+        			while(n>0){
+            				digit = n % 10;
+            				sum = sum + digit * digit;
+            				n = n / 10;
+        			}
+        			n = sum;
+    			}
+    			return n==1;
+    		}
+
+46.Contains Duplicate-2 :-
+
+	Code[C++]:-
+
+		bool containsNearbyDuplicate(vector<int>& nums, int k) {
+        		unordered_map<int,int>mpp;
+        		for(int i=0;i<nums.size();i++){
+            			if( mpp.find(nums[i]) != mpp.end() && abs(i-mpp[nums[i]])<=k )return true;    
+            			mpp[nums[i]]=i;
+        		}
+        		return false;    
+    		}
+
+47.Longest Consecutive Sequence :-
+
+	Code[C++]:-
+
+		Will be Added Soon...
+		
