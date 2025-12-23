@@ -4,7 +4,7 @@ Welcome to my repository where I tackle the **LeetCode Top 150 Interview Questio
 
 ---
 
-## 🚀 Why This Sheet?
+## Why This Sheet?
 
 The **LeetCode 150** list is a refined, high-quality set of problems frequently asked at companies like Google, Amazon, Facebook, Microsoft, etc. It's an excellent way to:
 
@@ -15,24 +15,24 @@ The **LeetCode 150** list is a refined, high-quality set of problems frequently 
 
 ---
 
-## 📁 Structure
+## Structure
 
 Each folder or file includes:
 
-- ✅ Problem title
-- 🧠 Explanation / Intuition
-- 🧪 Code implementation (in C++)
-- ⏱️ Time and space complexity analysis
+- Problem title
+- Explanation / Intuition
+- Code implementation (in C++)
+- Time and space complexity analysis
 
 ---
 
-## 🛠️ Languages Used
+## Languages Used
 
 - [x] C++
 
 ---
 
-## 📌 Topics Covered
+## Topics Covered
 
 - Arrays & Strings
 - Two Pointers
@@ -60,7 +60,7 @@ Each folder or file includes:
 
 ---
 
-## 🧠 Learnings
+## Learnings
 
 - Learned to optimize brute-force solutions
 - Improved code readability and modularity
@@ -69,14 +69,14 @@ Each folder or file includes:
 
 ---
 
-## 📅 Plan
+## Plan
 
-- ✅ 1st Month: Solve 75 questions with depth and revision
-- ✅ 2nd Month: Complete all 150 with speed + mock practice
+- 1st Month: Solve 75 questions with depth and revision
+- 2nd Month: Complete all 150 with speed + mock practice
 
 ---
 
-## 🧩 How to Use This Repo
+## How to Use This Repo
 
 Feel free to:
 
@@ -86,15 +86,15 @@ Feel free to:
 
 ---
 
-## 🙌 Let's Connect
+## Let's Connect
 
-- 🔗 [My LeetCode Profile](https://leetcode.com/prashantdlp/)
-- 💼 [My LinkedIn](https://www.linkedin.com/in/prashant-meena-2a5b3b332/)
-- 📬 Open to discussion and collaboration!
+- [My LeetCode Profile](https://leetcode.com/prashantdlp/)
+- [My LinkedIn](https://www.linkedin.com/in/prashant-meena-2a5b3b332/)
+- Open to discussion and collaboration!
 
 ---
 
-## ⭐ Star This Repo If...
+## Star This Repo If...
 
 You find it useful or want to revisit it later 🙌
 
